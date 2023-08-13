@@ -79,9 +79,10 @@ lastPage=()=>{
     }
 }
 $(document).ready(()=>{
+    makePage()
+    makeArchive()
+    pangu.autoSpacingPage()
     setTimeout(()=>{
-        makePage()
-        makeArchive()
         $("body").fadeIn(1000)
         $(".list").fadeIn()
         $(window).scrollTop(parseFloat(localStorage.getItem("scroll"))).on("scroll",function () {

@@ -149,6 +149,7 @@ $(document).ready(()=>{
     $("#essay").append(markdown(true).render(data[2].replace(/(---[\s\S]*?---)/,"")))
     data[4].reverse().forEach((value,index)=>makeComment(value).appendTo($("#comments")))
     createToc(document)
+    pangu.autoSpacingPage()
     setTimeout(()=>{
         $("body").fadeIn(1000)
         $(".list").fadeIn()
