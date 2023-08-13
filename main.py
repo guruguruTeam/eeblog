@@ -1,3 +1,4 @@
+# main.py
 # -*- coding: UTF-8 -*-
 
 from flask import Flask,jsonify,request,render_template,send_file
@@ -66,4 +67,4 @@ def comment():
     return jsonify((1,"评论","评论发送成功！",list_))
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0",port=1234,debug=True)
+    app.run(host="0.0.0.0",port=1234)
