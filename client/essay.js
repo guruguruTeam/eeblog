@@ -133,6 +133,7 @@ $(document).ready(()=>{
         $.ajax(request("/comment",data_))
         $("#tips").text("评论正在发送中……")
         $("#editText")[0].value=""
+        autoHeight("#editText")
     })
     $("#responses>p>a").click(function () {
         addText(` ${$(this).text()} `)

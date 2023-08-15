@@ -78,7 +78,7 @@ hr,#page h1,#page h2,#index h1,#index h2 {
     border-bottom:2px solid #888;
     cursor:pointer;
 }
-a,span,#page h3,.essay,.essay * {
+a,span,#page h3,.essay,.essay *,summary,summary * {
     cursor:pointer;
 }
 h1 {
@@ -138,7 +138,6 @@ details>br:nth-child(-n+3) {
 }
 summary {
     font-weight:bold;
-    cursor:pointer;
     margin-top:4px;
 }
 summary::marker {
