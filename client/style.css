@@ -67,7 +67,7 @@ a::after {
     content:"]";
 }
 li {
-    margin-left:1em;
+    margin-left:1em!important;
 }
 hr {
     border:0;
@@ -107,7 +107,7 @@ mark {
     color:#111;
 }
 ul,ol {
-    margin-bottom:4px;
+    margin-bottom:4px!important;
 }
 pre,code {
     font-size:0.9em;
