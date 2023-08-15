@@ -33,13 +33,15 @@ def index():
     list_=((file.rsplit(".",1)[0],time_(f"notes/{file}")) for file in listdir("notes"))
     list__=[file.rsplit(".",1)[0] for file in listdir("pages")]
     data=sorted(list_,key=lambda essay:essay[1],reverse=True)
-    return render_template("index.html",data=(data,list__))
+    bing="</a><a href='".join([f"/notes/{file_[0]}'>{file_[0]}" for file_ in data]+[f"/pages/{file_}'>{file_}" for file_ in list__])
+    return render_template("index.html",data=(data,list__),bing="<a href='"+bing+"</a>")
 
 @app.route("/<path:folder>/<path:file>",methods=method)
 def essay(folder,file):
     path_=f"{folder}/{file}.md"
-    data=(folder,file,load_(path_).read(),time_(path_),load(load_(test(f"client/_/{file}.json"))))
-    return render_template("essay.html",folder=folder,title=file,data=data)
+    text="#"+load_(path_).read().split("#",1)[-1]
+    data=(folder,file,text,time_(path_),load(load_(test(f"client/_/{file}.json"))))
+    return render_template("essay.html",folder=folder,title=file,data=data,bing=text[:min(50,len(text))].replace("\n","\\n")+"……")
 
 @app.route("/files/<path:folder>/<path:file>",methods=method)
 def file(folder,file):
