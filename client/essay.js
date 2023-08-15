@@ -148,7 +148,7 @@ $(document).ready(()=>{
             $("<p>").html(`共有<i>${data[2].length}</i>字 预计阅读时长<i>${Math.ceil(data[2].length/500)}</i>分钟`)
         )
     }
-    $("#essay").append(markdown(true).render(data[2].replace(/(---[\s\S]*?---)/,"")))
+    $("#essay").append(markdown(true).render(data[2]))
     data[4].reverse().forEach((value,index)=>makeComment(value).appendTo($("#comments")))
     createToc(document)
     pangu.autoSpacingPage()
