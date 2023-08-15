@@ -7,7 +7,7 @@ getDate=(time)=>{
     return new Date(time*1000).toLocaleString()
 }
 makeArchive=()=>{
-    temp=data.reverse()
+    temp=data[0].reverse()
     list=temp.map((value)=>getDate(value[1]).split("/",3).slice(0,2).join("/"))
     Array.from(new Set(list)).forEach((value)=>{
         $(`<div class="item" date="${value}">`).append(
@@ -27,12 +27,15 @@ makeArchive=()=>{
 makePage=()=>{
     temp=0
     page=parseInt(window.location.href.split("#")[1])
-    for (i=1;i<=Math.ceil(data.length/5);i++) {
+    data[1].reverse().forEach((value)=>{
+        $("#header").prepend(`<li><a href="/pages/${value}">${value}</a></li> `)
+    })
+    for (i=1;i<=Math.ceil(data[0].length/5);i++) {
         div=$(`<div id="${i}">`).appendTo($("#essays"))
         temp_=temp
         if (i==page) div.addClass("now")
-        for (temp;temp<Math.min(temp_+5,data.length);temp++) {
-            makeEssay(data[temp]).appendTo(div)
+        for (temp;temp<Math.min(temp_+5,data[0].length);temp++) {
+            makeEssay(data[0][temp]).appendTo(div)
         }
     }
     if ($(".now").length==0) {

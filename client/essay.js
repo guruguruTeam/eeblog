@@ -31,10 +31,9 @@ request=(url,data_)=>{
 reload=(res)=>{
     if (res[1]=="评论") {
         if (res[0]) {
-            $("#editText")[0].value=""
             $("#comments").prepend(makeComment(res[3]).hide().fadeIn())
         }
-        else $("#tips").text(res[2])
+        $("#tips").text(res[2])
     }
     return res
 }
@@ -132,6 +131,8 @@ $(document).ready(()=>{
         data_.append("user",$("#editNick")[0].value||"")
         data_.append("content",$("#editText")[0].value||"")
         $.ajax(request("/comment",data_))
+        $("#tips").text("评论正在发送中……")
+        $("#editText")[0].value=""
     })
     $("#responses>p>a").click(function () {
         addText(` ${$(this).text()} `)

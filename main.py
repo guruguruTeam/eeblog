@@ -31,14 +31,14 @@ def error(error):
 @app.route("/",methods=method)
 def index():
     list_=((file.rsplit(".",1)[0],time_(f"notes/{file}")) for file in listdir("notes"))
+    list__=[file.rsplit(".",1)[0] for file in listdir("pages")]
     data=sorted(list_,key=lambda essay:essay[1],reverse=True)
-    return render_template("index.html",data=data)
+    return render_template("index.html",data=(data,list__))
 
 @app.route("/<path:folder>/<path:file>",methods=method)
 def essay(folder,file):
     path_=f"{folder}/{file}.md"
     data=(folder,file,load_(path_).read(),time_(path_),load(load_(test(f"client/_/{file}.json"))))
-
     return render_template("essay.html",folder=folder,title=file,data=data)
 
 @app.route("/files/<path:folder>/<path:file>",methods=method)
@@ -67,4 +67,4 @@ def comment():
     return jsonify((1,"评论","评论发送成功！",list_))
 
 if __name__=="__main__":
-    app.run(host="0.0.0.0",port=1234)
+    app.run(host="127.0.0.1",port=1234,debug=False)
