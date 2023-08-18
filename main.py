@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 from flask import Flask,jsonify,request,render_template,send_file
+from flask_limiter import Limiter
 from json import dump,load
 from codecs import open
 from time import time
@@ -19,16 +20,24 @@ def load_(file,mode="r"):
 def time_(path_):
     return round(path.getmtime(path_))
 
-app=Flask("guru",template_folder="client")
-app.secret_key="guru"
+def getip():
+    return request.headers.get("X-Forwarded-For",request.remote_addr)
+
+def limited():
+    return "……"
+
+app=Flask(str(round(time())),template_folder="client")
+limiter=Limiter(app=app,key_func=getip)
 
 method=("POST","GET")
 
 @app.errorhandler(Exception)
+@limiter.limit("5/minute")
 def error(error):
     return render_template("404.html")
 
 @app.route("/",methods=method)
+@limiter.limit("5/minute")
 def index():
     list_=((file.rsplit(".",1)[0],time_(f"notes/{file}")) for file in listdir("notes"))
     list__=[file.rsplit(".",1)[0] for file in listdir("pages")]
@@ -37,6 +46,7 @@ def index():
     return render_template("index.html",data=(data,list__),bing="<a href='"+bing+"</a>")
 
 @app.route("/<path:folder>/<path:file>",methods=method)
+@limiter.limit("5/minute")
 def essay(folder,file):
     path_=f"{folder}/{file}.md"
     text="#"+load_(path_).read().split("#",1)[-1]
@@ -44,10 +54,12 @@ def essay(folder,file):
     return render_template("essay.html",folder=folder,title=file,data=data,bing=text[:min(50,len(text))].replace("\n","\\n")+"……")
 
 @app.route("/files/<path:folder>/<path:file>",methods=method)
+@limiter.limit("5/second")
 def file(folder,file):
     return send_file(f"{folder}/{file}")
 
 @app.route("/comment",methods=method)
+@limiter.limit("5/minute")
 def comment():
     form=request.form
     note=form.get("note","")
