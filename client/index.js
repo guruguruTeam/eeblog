@@ -53,7 +53,7 @@ makeSidebar=(index,value,delay)=>{
     setTimeout(()=>value.fadeIn(delay),(delay/4)*index)
 }
 randomEssay=()=>{
-    window.location.href=`/notes/${data[Math.floor(Math.random()*data.length)][0]}`
+    window.location.href=`/notes/${data[0][Math.floor(Math.random()*data.length)][0]}`
 }
 firstPage=()=>{
     id=$(".now").attr("id")

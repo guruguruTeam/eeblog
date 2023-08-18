@@ -78,7 +78,7 @@ hr,#page h1,#page h2,#index h1,#index h2 {
     border-bottom:2px solid #888;
     cursor:pointer;
 }
-a,span,#page h3,.essay,.essay *,summary,summary * {
+a,span,#page h3,.essay,.essay *,summary,summary *,.nick,.nick * {
     cursor:pointer;
 }
 h1 {
@@ -130,8 +130,11 @@ pre>code {
 img {
     width:100%;
     height:100%;
-    margin:1em 0;
-    border-radius:2%;
+    margin-top:0.6em;
+    border-radius:5px;
+    transform:scale(1.02);
+    filter:blur(5px);
+    animation:blurIn 0.4s ease-in-out forwards 0.8s;
 }
 details>br:nth-child(-n+3) {
     display:none;
@@ -189,7 +192,15 @@ f3 {
     font-size:1.6em;
 }
 @keyframes fadeIn {
-    to {opacity:1}
+    to {
+        opacity:1;
+    }
+}
+@keyframes blurIn {
+    to {
+        transform:scale(1);
+        filter:blur(0);
+    }
 }
 #header,#buttons {
     list-style-type:none;
