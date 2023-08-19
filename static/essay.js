@@ -37,9 +37,13 @@ reload=(res)=>{
     }
     return res
 }
+addContent=(text)=>$("#editText")[0].value+=text
 makeComment=(data_)=>{
     return $("<div class='comment'>").append(
-        $("<p>").html(`<b><i><f1>${data_[0]}</f1> <f0><u>${getDate(data_[2])}</u></f0></i></b>`),
+        $(`<p><b><i class="nick"><f1>${data_[0]}</f1> <f0><u>${getDate(data_[2])}</u></f0></i></b></p>`).click(function () {
+            addContent(`@${$(this).text().split(" ",1)[0]} `)
+            autoHeight("#editText")
+        }),
         $("<div>").html(markdown(false).render(data_[1]))
     )
 }

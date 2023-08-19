@@ -64,7 +64,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 36000   #session长期有效，则设
 Session(app)
 bantypes = ['ip','word']
 auxiliary_ban = {}
-limiter = Limiter(app, key_func=getIP, default_limits=["10 per second"], storage_uri=redis_uri, storage_options={"password": redis_passwd})
+limiter = Limiter(app, key_func=getIP, default_limits=["1 per second"], storage_uri=redis_uri, storage_options={"password": redis_passwd})
 
 @app.before_request
 def before_request_func():
@@ -76,9 +76,9 @@ def before_request_func():
     if ipcheck_ret != 'pass':
         return '您已被禁止访问！'
 
-#@app.errorhandler(Exception)
-#def error(error):
-#    return render_template("404.html")
+@app.errorhandler(Exception)
+def error(error):
+    return render_template("404.html")
 
 @app.route('/captche', methods=['POST'])
 def captche():
@@ -88,6 +88,7 @@ def captche():
     return jsonify(ret)
 
 @app.route("/",methods=method)
+@limiter.limit("5/minute")
 def index():
     sql = 'select title,mtime,type from context;'
     c.execute(sql)
@@ -118,6 +119,7 @@ def essay(folder,file):
     return render_template("essay.html",folder=folder,title=file,data=data,bing=text[:min(50,len(text))].replace("\n","\\n")+"……")
 
 @app.route("/files/<path:folder>/<path:file>",methods=method)
+@limiter.limit("5/second")
 def file(folder,file):
     #return send_file(f"{folder}/{file}")
     print(folder, file)
@@ -127,6 +129,7 @@ def file(folder,file):
     return jsonify(fet)
 
 @app.route("/comment",methods=method)
+@limiter.limit("5/minute")
 def comment():
     form=request.form
     print(form.get('note'))
