@@ -4,7 +4,8 @@ menu=()=>{
     $("body").css("padding-right",$(".list").toggle().is(":visible")?`${width/size+8}em`:`${width/size-8}em`)
 }
 getDate=(time)=>{
-    return new Date(time*1000).toLocaleString()
+    //return new Date(time*1000).toLocaleString()
+    return time
 }
 makeArchive=()=>{
     temp=data[0].reverse()
@@ -19,7 +20,7 @@ makeArchive=()=>{
     list.forEach((value,index)=>{
         $(`div[date="${value}"]`).append(
             $('<div class="item">').append(
-                $(`<a class="level3" href="/notes/${temp[index][0]}"></a>`).text(temp[index][0])
+                $(`<a class="level3" href="/article/notes/${temp[index][0]}"></a>`).text(temp[index][0])
             )
         )
     })
@@ -28,7 +29,7 @@ makePage=()=>{
     temp=0
     page=parseInt(window.location.href.split("#")[1])
     data[1].reverse().forEach((value)=>{
-        $("#header").prepend(`<li><a href="/pages/${value}">${value}</a></li> `)
+        $("#header").prepend(`<li><a href="/article/pages/${value}">${value}</a></li> `)
     })
     for (i=1;i<=Math.ceil(data[0].length/5);i++) {
         div=$(`<div id="${i}">`).appendTo($("#essays"))
@@ -47,13 +48,13 @@ makeEssay=(value)=>{
     return $(`<div class="essay">`).append(
         $("<h2>").text(value[0]),
         $("<p>").html(`更新时间｜<u><i>${getDate(value[1])}</i></u>`)
-    ).click(()=>window.location.href=`/notes/${value[0]}`)
+    ).click(()=>window.location.href=`/article/notes/${value[0]}`)
 }
 makeSidebar=(index,value,delay)=>{
     setTimeout(()=>value.fadeIn(delay),(delay/4)*index)
 }
 randomEssay=()=>{
-    window.location.href=`/notes/${data[0][Math.floor(Math.random()*data.length)][0]}`
+    window.location.href=`/article/notes/${data[0][Math.floor(Math.random()*data.length)][0]}`
 }
 firstPage=()=>{
     id=$(".now").attr("id")
