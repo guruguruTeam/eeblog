@@ -88,7 +88,6 @@ def captche():
     return jsonify(ret)
 
 @app.route("/",methods=method)
-@limiter.limit("5/minute")
 def index():
     sql = 'select title,mtime,type from context;'
     c.execute(sql)
@@ -119,7 +118,6 @@ def essay(folder,file):
     return render_template("essay.html",folder=folder,title=file,data=data,bing=text[:min(50,len(text))].replace("\n","\\n")+"……")
 
 @app.route("/files/<path:folder>/<path:file>",methods=method)
-@limiter.limit("5/second")
 def file(folder,file):
     #return send_file(f"{folder}/{file}")
     print(folder, file)
@@ -129,7 +127,6 @@ def file(folder,file):
     return jsonify(fet)
 
 @app.route("/comment",methods=method)
-@limiter.limit("5/minute")
 def comment():
     form=request.form
     print(form.get('note'))
