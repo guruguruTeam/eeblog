@@ -76,9 +76,9 @@ def before_request_func():
     if ipcheck_ret != 'pass':
         return '您已被禁止访问！'
 
-@app.errorhandler(Exception)
-def error(error):
-    return render_template("404.html")
+#@app.errorhandler(Exception)
+#def error(error):
+#    return render_template("404.html")
 
 @app.route('/captche', methods=['POST'])
 def captche():
@@ -391,6 +391,62 @@ def adminApiOplogData(logtype):
         ls.append(msg)
     
     return jsonify({"code": 0, "msg": "", "count": fet2, "data": ls})
+
+@app.route('/admin/page/comment/view')
+def admimPageCommentView():
+    return render_template('background/comment/view.html')
+
+@app.route('/admin/api/comment/data', methods=['POST'])
+def adminApiCommentData():
+    page = request.form['page']
+    limit = request.form['limit']
+    title = ''
+    if 'title' in request.form:
+        title = request.form['title']
+
+    sql = "select id,ip,ctime,nickname,content,note from comment"
+    sql2 = 'select count(id) from comment'
+    sql_args = []
+    sql2_args = []
+    if title != '' and title is not None:
+        sql += " where id like ? or ip like ? or ctime like ? or nickname like ? or content like ? or note like ?"
+        sql2 += " where id like ? or ip like ? or ctime like ? or nickname like ? or content like ? or note like ?"
+        for i in range(6):
+            sql_args.append('%{}%'.format(title))
+            sql2_args.append('%{}%'.format(title))
+    
+    sql += " order by id desc limit ?,?" #.format((int(page)-1)*int(limit), int(limit))
+    sql_args.append((int(page)-1)*int(limit))
+    sql_args.append(int(limit))
+    
+    c.execute(sql, sql_args)
+    fet = c.fetchall()
+    c.execute(sql2, sql2_args)
+    fet2 = c.fetchone()[0]
+
+    ls = []
+    for l in fet:
+        msg = {'id':l[0], 'ip':l[1], 'ctime':l[2], 'nickname':l[3], 'content':l[4], 'note':l[5]}
+        ls.append(msg)
+    
+    return jsonify({"code": 0, "msg": "", "count": fet2, "data": ls})
+
+@app.route('/admin/api/comment/del',methods=['POST'])
+def adminApiCommentDel():
+    ids_txt = request.form['ids']
+    ids = ids_txt.split(',')
+    sql = 'delete from comment where ('
+    sql_args = []
+    for l in ids:
+        sql += 'id=? or '
+        sql_args.append(l)
+    sql = sql[:-3]
+    sql += ')'
+    c.execute(sql, sql_args)
+    con.commit()
+
+    logAdminOp(session['ADMIN_NAME'], getIP(), 'comment', '删除了ID为 {} 的评论'.format(ids_txt), c,con)
+    return jsonify({"code": 0, "msg": ""})
 # -------------admin----------------
 
 if __name__=="__main__":
