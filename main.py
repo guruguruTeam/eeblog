@@ -447,6 +447,93 @@ def adminApiCommentDel():
 
     logAdminOp(session['ADMIN_NAME'], getIP(), 'comment', '删除了ID为 {} 的评论'.format(ids_txt), c,con)
     return jsonify({"code": 0, "msg": ""})
+
+@app.route('/admin/page/content/<pagetype>/edit')
+def adminPageContentEdit(pagetype):
+    id = request.args['id']
+    sql = "select title,tags,content from context where id=? and type=?"
+    c.execute(sql, (id,pagetype[:-1]))
+    fet = c.fetchone()
+    msg = {"id":id,'title':fet[0], 'tags':fet[1], 'content':fet[2]}
+    return render_template('background/content/edit.html', pagetype=pagetype, content_info=msg)
+
+@app.route('/admin/page/content/<pagetype>/<page>')
+def adminPageContent(pagetype,page):
+    return render_template('background/content/{}.html'.format(page), pagetype=pagetype)
+
+@app.route('/admin/api/content/<pagetype>/add', methods=['POST'])
+def adminApiContentAdd(pagetype):
+    title = request.form['title']
+    tags = request.form['tags'] if 'tags' in request.form else ''
+    content = request.form['content']
+    article_type = pagetype[:-1]
+    sql = 'insert into context(title,tags,ip,type,content) values(?,?,?,?,?);'
+    c.execute(sql, (title,tags,getIP(),article_type,content))
+    con.commit()
+    return jsonify({"code": 0, "msg": "添加成功"})
+
+@app.route('/admin/api/content/<pagetype>/edit', methods=['GET','POST'])
+def adminApiContentEdit(pagetype):
+    id = request.form['id']
+    title = request.form['title']
+    tags = request.form['tags'] if 'tags' in request.form else ''
+    content = request.form['content']
+    article_type = pagetype[:-1]
+    sql = 'update context set title=?,tags=?,ip=?,type=?,content=?,mtime=? where id=?;'
+    c.execute(sql, (title,tags,getIP(),article_type,content,nowTime(), id))
+    con.commit()
+    return jsonify({"code": 0, "msg": "修改成功"})
+
+@app.route('/admin/api/content/<pagetype>/data', methods=['POST'])
+def adminApiContentData(pagetype):
+    page = request.form['page']
+    limit = request.form['limit']
+    title = ''
+    if 'title' in request.form:
+        title = request.form['title']
+
+    sql = "select id,title,tags,ctime,mtime from context where type=?"
+    sql2 = 'select count(id) from context where type=?'
+    pagetype = pagetype[:-1]
+    sql_args = [pagetype]
+    sql2_args = [pagetype]
+    if title != '' and title is not None:
+        sql += "  and (id like ? or title like ? or tags like ? or ctime like ? or mtime like ?)"
+        sql2 += " and (id like ? or title like ? or tags like ? or ctime like ? or mtime like ?)"
+        for i in range(5):
+            sql_args.append('%{}%'.format(title))
+            sql2_args.append('%{}%'.format(title))
+    
+    sql += " order by id desc limit ?,?" #.format((int(page)-1)*int(limit), int(limit))
+    sql_args.append((int(page)-1)*int(limit))
+    sql_args.append(int(limit))
+    
+    c.execute(sql, sql_args)
+    fet = c.fetchall()
+    c.execute(sql2, sql2_args)
+    fet2 = c.fetchone()[0]
+
+    ls = []
+    for l in fet:
+        msg = {'id':l[0], 'title':l[1], 'tags':l[2], 'ctime':l[3], 'mtime':l[4]}
+        ls.append(msg)
+    
+    return jsonify({"code": 0, "msg": "", "count": fet2, "data": ls})
+
+@app.route('/admin/api/content/<pagetype>/del',methods=['POST'])
+def adminApiContentDel(pagetype):
+    ids_txt = request.form['ids']
+    ids = ids_txt.split(',')
+    sql = 'delete from context where ('
+    sql_args = []
+    for l in ids:
+        sql += 'id=? or '
+        sql_args.append(l)
+    sql = sql[:-3]
+    sql += ')'
+    c.execute(sql, sql_args)
+    con.commit()
+    return jsonify({"code": 0, "msg": ""})
 # -------------admin----------------
 
 if __name__=="__main__":

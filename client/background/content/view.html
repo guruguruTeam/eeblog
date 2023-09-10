@@ -32,6 +32,7 @@
 </head>
 
 <body style="margin-top: 1rem;">
+	<input type="hidden" id="pagetype" value="{{pagetype}}">
 	<div class="layui-fluid">
 		<div class="layui-card">
 			<!-- 搜索栏 -->
@@ -80,7 +81,7 @@
 		layui.use(['table'], function () {
 			var table = layui.table;
 			var form = layui.form;
-
+			var pagetype = $('#pagetype').val()
 			// 创建表格
 			var tbconfig = $.extend($$.tbconfig, {
 				cols: [[
@@ -93,7 +94,7 @@
 					{ title: '编辑时间', field: 'mtime', align: 'left', width: 150 },
 					{ title: '操作', fixed: 'right', width: 160, align: 'center', toolbar: '#tr-opts' }
 				]],
-				url: `/admin/api/content/notes/data`
+				url: `/admin/api/content/${pagetype}/data`
 			});
 			table.render(tbconfig);
 
@@ -120,7 +121,7 @@
 				if (obj.event === 'del') {
 					layer.confirm('您确定要删除行吗？', function (index) {
 						$$.ajax({
-							url: `/admin/api/content/notes/del`,
+							url: `/admin/api/content/${pagetype}/del`,
 							data: {
 								ids: data.id
 							},
@@ -134,7 +135,7 @@
 					layer.open({
 						type: 2,
 						title: '编辑',
-						content: `/admin/page/content/notes/edit?id=${data.id}`,
+						content: `/admin/page/content/${pagetype}/edit?id=${data.id}`,
 						maxmin: true,
 						area: ['80%', '80%'],
 						btn: ['确定', '取消'],
@@ -162,7 +163,7 @@
 					}
 					layer.confirm('确定删除吗？', function (index) {
 						$$.ajax({
-							url: `/admin/api/content/notes/del`,
+							url: `/admin/api/content/${pagetype}/del`,
 							data: {
 								ids: idArr.join(',')
 							},
@@ -177,7 +178,7 @@
 					layer.open({
 						type: 2,
 						title: '增加',
-						content: `/admin/page/content/notes/add`, 
+						content: `/admin/page/content/${pagetype}/add`, 
 						maxmin: true,
 						area: ['80%', '80%'],
 						btn: ['确定', '取消'],
